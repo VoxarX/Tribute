@@ -1,267 +1,609 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Ali-nator: The Ultimate Future Teller</title>
-    <style>
-      body {
-        background: linear-gradient(135deg, #1e1e1e, #292929);
-        color: #f5f5f5;
-        font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
-        text-align: center;
-        padding-top: 50px;
-        overflow: hidden;
-        margin: 0;
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ali-nator: AI Chat Bot</title>
+  <style>
+    :root {
+      --primary: #0d0d0d;
+      --secondary: #151515;
+      --accent: #7f39fb;
+      --accent-light: #9966ff;
+      --text: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --border: #333333;
+      --ai-message: #252525;
+      --user-message: #2d2463;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--primary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+    }
+    
+    .app-container {
+      width: 100%;
+      max-width: 1000px;
+      background-color: var(--secondary);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      margin: 1rem;
+      overflow: hidden;
+      display: flex;
+      height: 90vh;
+    }
+    
+    .chat-side {
+      flex: 7;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+    
+    .avatar-side {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-color: var(--primary);
+    }
+    
+    .app-header {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background-color: var(--primary);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .app-title {
+      flex: 1;
+    }
+    
+    .app-title h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.2rem;
+      color: var(--accent-light);
+    }
+    
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    .ali-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: #222;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      margin: 2rem 0;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    
+    .glowing {
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px rgba(127, 57, 251, 0.5);
       }
+      to {
+        box-shadow: 0 0 30px rgba(127, 57, 251, 0.8), 0 0 40px rgba(127, 57, 251, 0.4);
+      }
+    }
+    
+    .ali-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    
+    .eye {
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    
+    #eye1 {
+      top: 60px;
+      left: 45px;
+    }
+    
+    #eye2 {
+      top: 60px;
+      right: 45px;
+    }
+    
+    .pupil {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      background-color: #000;
+      border-radius: 50%;
+      transition: all 0.1s ease;
+    }
+    
+    .status-text {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .thinking-status {
+      color: var(--accent);
+      font-weight: bold;
+    }
+    
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .message {
+      max-width: 85%;
+      padding: 1rem;
+      border-radius: 18px;
+      line-height: 1.5;
+      font-size: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .ai-message {
+      align-self: flex-start;
+      background-color: var(--ai-message);
+      border-radius: 18px 18px 18px 0;
+    }
+    
+    .user-message {
+      align-self: flex-end;
+      background-color: var(--user-message);
+      border-radius: 18px 18px 0 18px;
+      color: white;
+    }
+    
+    .message-time {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      text-align: right;
+    }
+    
+    .input-container {
+      padding: 1rem;
+      background-color: var(--primary);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.8rem;
+    }
+    
+    .message-input {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background-color: var(--secondary);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    .message-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(127, 57, 251, 0.2);
+    }
+    
+    .send-button {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .send-button:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+    }
+    
+    .send-button:active {
+      transform: translateY(1px);
+    }
+    
+    .thinking {
+      display: flex;
+      align-self: flex-start;
+      background-color: var(--ai-message);
+      border-radius: 18px 18px 18px 0;
+      padding: 1.2rem 1.5rem;
+      gap: 0.5rem;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--text);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    
+    .dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    
+    .dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--secondary);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #444;
+    }
+    
+    @media (max-width: 768px) {
       .app-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
       }
-      h1 {
-        font-size: 60px;
-        color: #FFD700;
-        text-shadow: 0 0 10px #FFD700;
-        margin-bottom: 10px;
-      }
-      .subtitle {
-        font-size: 20px;
-        color: #d0d0d0;
-        margin-bottom: 30px;
-      }
-      .main-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-      }
-      .input-container {
-        background: rgba(0, 0, 0, 0.3);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        flex: 1;
-        margin-right: 20px;
-      }
-      input {
-        padding: 15px;
-        font-size: 18px;
-        margin: 10px;
-        border: none;
-        border-radius: 5px;
-        width: 250px;
-        background: #333;
-        color: #fff;
-        outline: none;
-      }
-      input::placeholder {
-        color: #aaa;
-      }
-      button {
-        padding: 15px 25px;
-        font-size: 18px;
-        margin: 10px;
-        background: #FFD700;
-        color: #1e1e1e;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.3s ease;
-      }
-      button:hover {
-        background: #FFC000;
-        transform: scale(1.05);
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-      }
-      #prediction {
-        margin-top: 30px;
-        font-size: 24px;
-        min-height: 60px;
-        padding: 10px;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 10px;
-        opacity: 0;
-        transition: opacity 1s ease;
-      }
-      .container {
-        position: relative;
-        display: inline-block;
-        background: rgba(0, 0, 0, 0.3);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        width: 220px;
-      }
-      .ali-image {
-        width: 180px;
-        position: relative;
-        margin: 0 auto;
-        display: block;
-      }
-      .eye {
-        width: 35px;
-        height: 35px;
-        background: white;
-        border: 3px solid black;
-        border-radius: 50%;
-        position: absolute;
-        overflow: hidden;
-      }
-      .pupil {
-        width: 18px;
-        height: 18px;
-        background: black;
-        border-radius: 50%;
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        transition: all 0.1s ease;
-      }
-      /* Eye positions over the image */
-      #eye1 { top: 90px; left: 55px; }
-      #eye2 { top: 90px; left: 105px; }
-      footer {
-        margin-top: 40px;
-        font-size: 14px;
-        color: #888;
-      }
-      @keyframes glow {
-        0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
-        100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-      }
-      .glow-effect {
-        animation: glow 2s infinite;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="app-container">
-      <h1>🔮 Ali-nator 🔮</h1>
-      <p class="subtitle">Ask the wise Ali-nator about your future</p>
       
-      <div class="main-content">
-        <!-- Input Container -->
-        <div class="input-container">
-          <input type="text" id="name" placeholder="Enter your name here">
-          <button onclick="tellFuture()">Ask Ali-nator</button>
-        </div>
-        
-        <!-- Ali-nator Face -->
-        <div class="container">
-          <img src="./884221F1-4409-4A94-A1FC-F6AEC914AC52.jpg" alt="Graduate with googly eyes" class="ali-image">
-          <div class="eye" id="eye1"><div class="pupil"></div></div>
-          <div class="eye" id="eye2"><div class="pupil"></div></div>
+      .chat-side {
+        flex: 1;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .avatar-side {
+        padding: 1rem;
+      }
+      
+      .ali-container {
+        width: 120px;
+        height: 120px;
+        margin: 1rem 0;
+      }
+      
+      #eye1, #eye2 {
+        width: 25px;
+        height: 25px;
+        top: 35px;
+      }
+      
+      #eye1 {
+        left: 25px;
+      }
+      
+      #eye2 {
+        right: 25px;
+      }
+      
+      .pupil {
+        width: 12px;
+        height: 12px;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="chat-side">
+      <div class="app-header">
+        <div class="app-title">
+          <h1>Ali-nator</h1>
+          <p class="subtitle">AI Chat Oracle</p>
         </div>
       </div>
       
-      <div id="prediction"></div>
+      <div class="chat-container" id="chatContainer">
+        <div class="message ai-message">
+          Hello! I'm Ali-nator, your AI chat oracle. Ask me anything and I'll share my wisdom with you!
+          <div class="message-time">Now</div>
+        </div>
+      </div>
       
-      <footer>
-        The Ali-nator knows all, sees all, predicts all © 2025
-      </footer>
+      <div id="thinking" class="thinking" style="display: none;">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      
+      <div class="input-container">
+        <input type="text" id="messageInput" class="message-input" placeholder="Type your message..." autofocus>
+        <button id="sendButton" class="send-button" aria-label="Send message">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
+    
+    <div class="avatar-side">
+      <div class="ali-container" id="aliContainer">
+        <img src="/api/placeholder/200/200" alt="Ali-nator AI" class="ali-image">
+        <div class="eye" id="eye1"><div class="pupil"></div></div>
+        <div class="eye" id="eye2"><div class="pupil"></div></div>
+      </div>
+      <div class="status-text" id="statusText">Ready to assist</div>
+    </div>
+  </div>
 
-    <script>
-      // Eye movement logic
-      const eyes = document.querySelectorAll('.eye');
-      document.addEventListener('mousemove', (event) => {
-        eyes.forEach(eye => {
-          const pupil = eye.querySelector('.pupil');
-          const rect = eye.getBoundingClientRect();
-          const eyeCenterX = rect.left + rect.width / 2;
-          const eyeCenterY = rect.top + rect.height / 2;
-          const angle = Math.atan2(event.clientY - eyeCenterY, event.clientX - eyeCenterX);
-          const maxDist = 10;
-          const x = Math.cos(angle) * maxDist;
-          const y = Math.sin(angle) * maxDist;
-          pupil.style.left = 8 + x + 'px';
-          pupil.style.top = 8 + y + 'px';
-        });
-      });
-
-      // Prediction logic with typing effect
-      const predictions = [
-        "You have a bug? Womp Womp",
-        "AHHHHHHH, I sense wickedness ",
-        "A syntax error will haunt you at 3AM.",
-        "Your code will compile first try. (This is a lie.)",
-        "You will become a legendary hacker known as 'The Ali Whisperer.'",
-        "A USB will be plugged in backwards 3 times in a row.",
-        "You will Rickroll yourself while debugging.",
-        "You will invent a programming language made entirely of memes.",
-        "Your future involves 17 missing semicolons.",
-        "You will mysteriously turn into a rubber duck during code reviews.",
-        "Your next bug will take exactly 42 minutes to fix.",
-        "You will find yourself explaining code to a houseplant.",
-        "Your future coding style will be described as 'chaotic good'.",
-        "You will dream in pseudocode next Tuesday.",
-        "A cat will walk across your keyboard and accidentally fix your bug."
-      ];
-
-      function typeText(element, text, speed = 50) {
-        let index = 0;
-        element.style.opacity = 1;
-        
-        const timer = setInterval(() => {
-          if (index < text.length) {
-            element.innerHTML += text.charAt(index);
-            index++;
-          } else {
-            clearInterval(timer);
-          }
-        }, speed);
+  <script>
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const thinking = document.getElementById('thinking');
+    const eyes = document.querySelectorAll('.eye');
+    const aliContainer = document.getElementById('aliContainer');
+    const statusText = document.getElementById('statusText');
+    
+    // Mistral API key - would normally be stored securely server-side
+    const MISTRAL_API_KEY = "ID497wIuDPwutdg5JylsCHpSjAXO2aI1";
+    
+    // Track if Ali is responding
+    let isResponding = false;
+    
+    // Submit when pressing Enter
+    messageInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter' && !isResponding) {
+        sendMessage();
       }
+    });
+    
+    // Submit when clicking send button
+    sendButton.addEventListener('click', function() {
+      if (!isResponding) {
+        sendMessage();
+      }
+    });
+    
+    // Eye movement
+    document.addEventListener('mousemove', (event) => {
+      eyes.forEach(eye => {
+        const pupil = eye.querySelector('.pupil');
+        const rect = eye.getBoundingClientRect();
+        const eyeCenterX = rect.left + rect.width / 2;
+        const eyeCenterY = rect.top + rect.height / 2;
+        const angle = Math.atan2(event.clientY - eyeCenterY, event.clientX - eyeCenterX);
+        const maxDist = 10;
+        const x = Math.cos(angle) * maxDist;
+        const y = Math.sin(angle) * maxDist;
+        pupil.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    });
 
-      function tellFuture() {
-        const name = document.getElementById("name").value.trim();
-        if (!name) {
-          alert("Please enter your name to receive a prediction!");
-          return;
-        }
-        
-        const predictionElement = document.getElementById("prediction");
-        predictionElement.innerHTML = "";
-        
-        // Add container glow effect
-        document.querySelector('.container').style.boxShadow = "0 0 30px rgba(255, 215, 0, 0.8)";
-        
-        // Make the eyes bigger briefly
-        const eyes = document.querySelectorAll('.eye');
+    // Blinking
+    document.addEventListener('DOMContentLoaded', () => {
+      setInterval(() => {
         eyes.forEach(eye => {
-          eye.style.width = "40px";
-          eye.style.height = "40px";
+          eye.style.height = "0px";
+          setTimeout(() => {
+            eye.style.height = "35px";
+          }, 200);
         });
+      }, 5000);
+    });
+    
+    // Add message to chat
+    function addMessage(text, isUser = false) {
+      const message = document.createElement('div');
+      message.classList.add('message');
+      message.classList.add(isUser ? 'user-message' : 'ai-message');
+      
+      // Get current time
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const timeStr = `${hours}:${minutes}`;
+      
+      message.innerHTML = `${text}<div class="message-time">${timeStr}</div>`;
+      chatContainer.appendChild(message);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    // Type effect for AI messages
+    function typeMessage(text, callback) {
+      const message = document.createElement('div');
+      message.classList.add('message', 'ai-message');
+      chatContainer.appendChild(message);
+      
+      // Get current time for message timestamp
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const timeStr = `${hours}:${minutes}`;
+      
+      let index = 0;
+      const timer = setInterval(() => {
+        if (index < text.length) {
+          message.innerHTML = text.substring(0, index + 1) + '<span class="cursor">|</span>' +
+                             `<div class="message-time">${timeStr}</div>`;
+          index++;
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        } else {
+          clearInterval(timer);
+          message.innerHTML = text + `<div class="message-time">${timeStr}</div>`;
+          if (callback) callback();
+        }
+      }, 30);
+    }
+    
+    // Send message
+    async function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message || isResponding) return;
+      
+      // Add user message to chat
+      addMessage(message, true);
+      
+      // Clear input and disable
+      messageInput.value = "";
+      isResponding = true;
+      messageInput.disabled = true;
+      sendButton.disabled = true;
+      
+      // Show thinking indicator
+      thinking.style.display = "flex";
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      
+      // Animate Ali avatar
+      aliContainer.classList.add('glowing');
+      statusText.textContent = "Thinking...";
+      statusText.classList.add('thinking-status');
+      eyes.forEach(eye => {
+        eye.style.width = "40px";
+        eye.style.height = "40px";
+      });
+      
+      try {
+        // Call Mistral AI API
+        const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${MISTRAL_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "mistral-medium",
+            messages: [{ role: "user", content: message }],
+            max_tokens: 200
+          })
+        });
+
+        // Check if response is ok
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const aiResponse = data.choices[0].message.content.trim();
         
+        // Hide thinking indicator
+        thinking.style.display = "none";
+        
+        // Reset avatar animation
         setTimeout(() => {
-          // Reset eyes
+          aliContainer.classList.remove('glowing');
+          statusText.textContent = "Ready to assist";
+          statusText.classList.remove('thinking-status');
           eyes.forEach(eye => {
             eye.style.width = "35px";
             eye.style.height = "35px";
           });
+        }, 300);
+        
+        // Type out response
+        typeMessage(aiResponse, () => {
+          // Re-enable input after typing finishes
+          messageInput.disabled = false;
+          sendButton.disabled = false;
+          isResponding = false;
+          messageInput.focus();
+        });
+
+      } catch (error) {
+        console.error("API Error:", error);
+        
+        // Hide thinking indicator
+        thinking.style.display = "none";
+        
+        // Reset avatar
+        aliContainer.classList.remove('glowing');
+        statusText.textContent = "Connection error";
+        eyes.forEach(eye => {
+          eye.style.width = "35px";
+          eye.style.height = "35px";
+        });
+        
+        // Show error message
+        typeMessage("I'm having trouble connecting to my brain right now. Please try again in a moment.", () => {
+          messageInput.disabled = false;
+          sendButton.disabled = false;
+          isResponding = false;
+          messageInput.focus();
           
-          // Reset glow
-          document.querySelector('.container').style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.5)";
-          
-          const randomPrediction = predictions[Math.floor(Math.random() * predictions.length)];
-          const fullText = name + ", " + randomPrediction;
-          
-          typeText(predictionElement, fullText);
-        }, 1000);
+          // Reset status after a delay
+          setTimeout(() => {
+            statusText.textContent = "Ready to assist";
+          }, 3000);
+        });
       }
-      
-      // Initialize with eyes following cursor
-      document.addEventListener('DOMContentLoaded', () => {
-        // Make eyes blink occasionally
-        setInterval(() => {
-          eyes.forEach(eye => {
-            eye.style.height = "0px";
-            setTimeout(() => {
-              eye.style.height = "35px";
-            }, 200);
-          });
-        }, 5000);
-      });
-    </script>
-  </body>
+    }
+    
+    // Initial focus
+    messageInput.focus();
+  </script>
+</body>
 </html>
