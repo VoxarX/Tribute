@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ali-nator: The Ultimate Future Teller</title>
+    <style>
+      body {
+        background: linear-gradient(135deg, #1e1e1e, #292929);
+        color: #f5f5f5;
+        font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+        text-align: center;
+        padding-top: 50px;
+        overflow: hidden;
+        margin: 0;
+      }
+      .app-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 60px;
+        color: #FFD700;
+        text-shadow: 0 0 10px #FFD700;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        font-size: 20px;
+        color: #d0d0d0;
+        margin-bottom: 30px;
+      }
+      .main-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+      .input-container {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        flex: 1;
+        margin-right: 20px;
+      }
+      input {
+        padding: 15px;
+        font-size: 18px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        width: 250px;
+        background: #333;
+        color: #fff;
+        outline: none;
+      }
+      input::placeholder {
+        color: #aaa;
+      }
+      button {
+        padding: 15px 25px;
+        font-size: 18px;
+        margin: 10px;
+        background: #FFD700;
+        color: #1e1e1e;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        background: #FFC000;
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      }
+      #prediction {
+        margin-top: 30px;
+        font-size: 24px;
+        min-height: 60px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+      .container {
+        position: relative;
+        display: inline-block;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        width: 220px;
+      }
+      .ali-image {
+        width: 180px;
+        position: relative;
+        margin: 0 auto;
+        display: block;
+      }
+      .eye {
+        width: 35px;
+        height: 35px;
+        background: white;
+        border: 3px solid black;
+        border-radius: 50%;
+        position: absolute;
+        overflow: hidden;
+      }
+      .pupil {
+        width: 18px;
+        height: 18px;
+        background: black;
+        border-radius: 50%;
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        transition: all 0.1s ease;
+      }
+      /* Eye positions over the image */
+      #eye1 { top: 90px; left: 55px; }
+      #eye2 { top: 90px; left: 105px; }
+      footer {
+        margin-top: 40px;
+        font-size: 14px;
+        color: #888;
+      }
+      @keyframes glow {
+        0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+      }
+      .glow-effect {
+        animation: glow 2s infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <h1>🔮 Ali-nator 🔮</h1>
+      <p class="subtitle">Ask the wise Ali-nator about your future</p>
+      
+      <div class="main-content">
+        <!-- Input Container -->
+        <div class="input-container">
+          <input type="text" id="name" placeholder="Enter your name here">
+          <button onclick="tellFuture()">Ask Ali-nator</button>
+        </div>
+        
+        <!-- Ali-nator Face -->
+        <div class="container">
+          <img src="./884221F1-4409-4A94-A1FC-F6AEC914AC52.jpg" alt="Graduate with googly eyes" class="ali-image">
+          <div class="eye" id="eye1"><div class="pupil"></div></div>
+          <div class="eye" id="eye2"><div class="pupil"></div></div>
+        </div>
+      </div>
+      
+      <div id="prediction"></div>
+      
+      <footer>
+        The Ali-nator knows all, sees all, predicts all © 2025
+      </footer>
+    </div>
+
+    <script>
+      // Eye movement logic
+      const eyes = document.querySelectorAll('.eye');
+      document.addEventListener('mousemove', (event) => {
+        eyes.forEach(eye => {
+          const pupil = eye.querySelector('.pupil');
+          const rect = eye.getBoundingClientRect();
+          const eyeCenterX = rect.left + rect.width / 2;
+          const eyeCenterY = rect.top + rect.height / 2;
+          const angle = Math.atan2(event.clientY - eyeCenterY, event.clientX - eyeCenterX);
+          const maxDist = 10;
+          const x = Math.cos(angle) * maxDist;
+          const y = Math.sin(angle) * maxDist;
+          pupil.style.left = 8 + x + 'px';
+          pupil.style.top = 8 + y + 'px';
+        });
+      });
+
+      // Prediction logic with typing effect
+      const predictions = [
+        "You have a bug? Womp Womp",
+        "AHHHHHHH, I sense wickedness ",
+        "A syntax error will haunt you at 3AM.",
+        "Your code will compile first try. (This is a lie.)",
+        "You will become a legendary hacker known as 'The Ali Whisperer.'",
+        "A USB will be plugged in backwards 3 times in a row.",
+        "You will Rickroll yourself while debugging.",
+        "You will invent a programming language made entirely of memes.",
+        "Your future involves 17 missing semicolons.",
+        "You will mysteriously turn into a rubber duck during code reviews.",
+        "Your next bug will take exactly 42 minutes to fix.",
+        "You will find yourself explaining code to a houseplant.",
+        "Your future coding style will be described as 'chaotic good'.",
+        "You will dream in pseudocode next Tuesday.",
+        "A cat will walk across your keyboard and accidentally fix your bug."
+      ];
+
+      function typeText(element, text, speed = 50) {
+        let index = 0;
+        element.style.opacity = 1;
+        
+        const timer = setInterval(() => {
+          if (index < text.length) {
+            element.innerHTML += text.charAt(index);
+            index++;
+          } else {
+            clearInterval(timer);
+          }
+        }, speed);
+      }
+
+      function tellFuture() {
+        const name = document.getElementById("name").value.trim();
+        if (!name) {
+          alert("Please enter your name to receive a prediction!");
+          return;
+        }
+        
+        const predictionElement = document.getElementById("prediction");
+        predictionElement.innerHTML = "";
+        
+        // Add container glow effect
+        document.querySelector('.container').style.boxShadow = "0 0 30px rgba(255, 215, 0, 0.8)";
+        
+        // Make the eyes bigger briefly
+        const eyes = document.querySelectorAll('.eye');
+        eyes.forEach(eye => {
+          eye.style.width = "40px";
+          eye.style.height = "40px";
+        });
+        
+        setTimeout(() => {
+          // Reset eyes
+          eyes.forEach(eye => {
+            eye.style.width = "35px";
+            eye.style.height = "35px";
+          });
+          
+          // Reset glow
+          document.querySelector('.container').style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.5)";
+          
+          const randomPrediction = predictions[Math.floor(Math.random() * predictions.length)];
+          const fullText = name + ", " + randomPrediction;
+          
+          typeText(predictionElement, fullText);
+        }, 1000);
+      }
+      
+      // Initialize with eyes following cursor
+      document.addEventListener('DOMContentLoaded', () => {
+        // Make eyes blink occasionally
+        setInterval(() => {
+          eyes.forEach(eye => {
+            eye.style.height = "0px";
+            setTimeout(() => {
+              eye.style.height = "35px";
+            }, 200);
+          });
+        }, 5000);
+      });
+    </script>
+  </body>
+</html>

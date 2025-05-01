@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Special Tribute</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: white;
+      font-family: sans-serif;
+      overflow: hidden;
+      text-align: center;
+    }
+    #fadeText {
+      font-size: 50px;
+      opacity: 0;
+      animation: fadeInOut 5s;
+      margin-top: 200px;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      50% { opacity: 1; }
+      80% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+    #spawnButton {
+      padding: 20px 50px;
+      font-size: 30px;
+      margin-top: 100px;
+      cursor: pointer;
+      display: none;
+      background: red;
+      color: white;
+      border: none;
+    }
+    .popup {
+      position: fixed;
+      background: #111;
+      border: 3px solid #f00;
+      padding: 5px;
+      z-index: 9999;
+      width: 320px;
+      height: auto;
+      box-shadow: 0 0 10px red;
+      animation: popFade 0.3s ease;
+    }
+    @keyframes popFade {
+      from { transform: scale(0.2); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="fadeText">Hello sir, This website is designed to show what a great Teacher you are</div>
+<button id="spawnButton">Click Me!</button>
+
+<audio id="brainrotAudio" src="tung.mp3"></audio>
+
+<script>
+  const fadeText = document.getElementById("fadeText");
+  const spawnButton = document.getElementById("spawnButton");
+  const audio = document.getElementById("brainrotAudio");
+
+  // After text fades, hide it and show button
+  setTimeout(() => {
+    fadeText.style.display = "none";
+    spawnButton.style.display = "inline-block";
+  }, 5500);
+
+  let audioInterval;
+
+  spawnButton.onclick = () => {
+    spawnButton.style.display = "none";
+
+    // Start playing audio every 5s
+    audio.play();
+    audioInterval = setInterval(() => {
+      audio.currentTime = 0;
+      audio.play();
+    }, 5000);
+
+    let count = 0;
+    const maxPopups = 30;
+
+    let spawnInterval = setInterval(() => {
+      let popup = document.createElement("div");
+      popup.className = "popup";
+      popup.style.left = Math.random() * (window.innerWidth - 340) + "px";
+      popup.style.top = Math.random() * (window.innerHeight - 200) + "px";
+      popup.innerHTML = `<img src="tung.gif" style="width:100%; height:auto;">`;
+      document.body.appendChild(popup);
+
+      if (++count >= maxPopups) clearInterval(spawnInterval);
+    }, 300);
+  };
+
+  // Optional: Stop audio when window is closed
+  window.onbeforeunload = () => {
+    clearInterval(audioInterval);
+  }
+</script>
+
+</body>
+</html>
